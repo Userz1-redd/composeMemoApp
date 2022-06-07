@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ComposeMemoApp</string>
+    <string name="title_text">Memo - Application</string>
 </resources>

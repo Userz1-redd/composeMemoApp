@@ -7,8 +7,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -19,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.coroutineScope
 import com.example.composememoapp.R
 import com.example.composememoapp.ViewModelFactory
 import com.example.composememoapp.data.Memo
@@ -27,6 +31,7 @@ import com.example.composememoapp.data.source.MemoRepository
 import com.example.composememoapp.data.source.local.MemoDatabase
 import com.example.composememoapp.data.source.local.MemoLocalDataSource
 import com.example.composememoapp.ui.theme.ComposeMemoAppTheme
+import kotlinx.coroutines.launch
 
 class ListActivity : ComponentActivity() {
 
@@ -48,6 +53,7 @@ class ListActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
 
@@ -59,7 +65,7 @@ fun ListComposable(viewModel : ListViewModel){
 
             memoTextField(viewModel)
 
-            memoList()
+            memoList(viewModel)
         }
     }
 }
@@ -86,14 +92,14 @@ fun titleField(){
 
 @Composable
 fun memoTextField(viewModel : ListViewModel){
-    Row(modifier = Modifier.fillMaxWidth().height(70.dp)) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(70.dp)) {
         var textState by remember { mutableStateOf("") }
-        val clicked = {
-            viewModel.addMemo(Memo(textState, false))
-            textState = ""
-        }
         OutlinedTextField(
-            modifier = Modifier.padding(horizontal = 10.dp).fillMaxHeight(),
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxHeight(),
             singleLine = true,
             value = textState,
             onValueChange = { textState = it },
@@ -101,8 +107,10 @@ fun memoTextField(viewModel : ListViewModel){
             placeholder = { Text("메모를 추가하세요!") }
         )
         OutlinedButton(
-            modifier = Modifier.padding(10.dp).fillMaxHeight(),
-            onClick = { clicked }
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxHeight(),
+            onClick = {viewModel.addMemo(Memo(textState, false)) }
         ) {
             Text(text = "Add")
         }
@@ -111,21 +119,44 @@ fun memoTextField(viewModel : ListViewModel){
 }
 
 @Composable
-fun memoList(){
+fun memoList(viewModel : ListViewModel){
+    val memoList : List<Memo> by viewModel.memoItems.collectAsState(listOf())
     LazyColumn(){
-
+        item{
+            memoList.forEach{
+                listItem(it)
+            }
+        }
     }
 }
 
 @Composable()
 fun listItem(memo : Memo){
-    Row(){
-        Text(
-            text = memo.title,
-            overflow = TextOverflow.Ellipsis,
-
+    Card(modifier = Modifier
+        .padding(20.dp)
+        .fillMaxWidth(),
+        elevation = 10.dp,
+        shape = RoundedCornerShape(12.dp)
+        ) {
+        Row(Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+            ) {
+            if(memo.lock){
+                Icon(painterResource(id = R.drawable.ic_lock), contentDescription = "lock")
+            }
+            else{
+                Icon(painterResource(id = R.drawable.ic_unlock), contentDescription = "unlock")
+            }
+            Text(
+                text = memo.title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 10.dp)
             )
+
+        }
     }
+
 }
 
 

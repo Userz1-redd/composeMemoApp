@@ -1,14 +1,11 @@
 package com.example.composememoapp.data.source
 
 import com.example.composememoapp.data.Memo
+import kotlinx.coroutines.flow.Flow
 
 interface MemoDataSource {
-    interface LoadMemoListCallback{
-        fun onMemoListLoaded(list : List<Memo>)
-        fun onDataNotAvailable()
-    }
 
-    suspend fun loadMemoList(callback : LoadMemoListCallback)
+    suspend fun loadMemoList() : Flow<List<Memo>>
 
     suspend fun addMemo(memo : Memo)
 }

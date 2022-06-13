@@ -169,7 +169,20 @@ fun listItem(viewModel : ListViewModel,memo : Memo){
 
         }
     }
-    if(dialogState) memoDialog({dialogState= !dialogState},viewModel,memo)
+    var dismissDialog = {
+        dialogState = !dialogState
+    }
+    if(dialogState){
+        Dialog(onDismissRequest = dismissDialog) {
+            Surface(modifier = Modifier.width(200.dp)
+                .wrapContentHeight(),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
+            ) {
+                memoDialogContent(dismissDialog,viewModel,memo = memo)
+            }
+        }
+    }
 }
 
 @Composable()
@@ -204,7 +217,7 @@ fun memoDialogContent(onDismissDialog: () -> Unit,viewModel : ListViewModel,memo
             .height(12.dp))
         Row() {
             Checkbox(checked = lockState, onCheckedChange = { lockState = it })
-            Text(text ="Lock")
+            Text(text ="Lock", modifier = Modifier.padding(top = 10.dp))
         }
         Spacer(modifier = Modifier
             .fillMaxWidth()

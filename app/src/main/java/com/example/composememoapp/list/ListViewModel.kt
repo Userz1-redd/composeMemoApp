@@ -29,4 +29,11 @@ class ListViewModel(private val repository : MemoRepository) : ViewModel() {
             repository.addMemo(memo)
         }
     }
+
+    fun modifyMemo(memo : Memo){
+        Log.d("TAG","Add Memo ${memo}")
+        viewModelScope.launch{
+            repository.modifyMemo(memo)
+        }
+    }
 }

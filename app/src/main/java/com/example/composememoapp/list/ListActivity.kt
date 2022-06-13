@@ -1,10 +1,13 @@
 package com.example.composememoapp.list
 
+import android.content.res.Resources
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.coroutineScope
 import com.example.composememoapp.R
 import com.example.composememoapp.ViewModelFactory
@@ -96,6 +101,7 @@ fun memoTextField(viewModel : ListViewModel){
         .fillMaxWidth()
         .height(70.dp)) {
         var textState by remember { mutableStateOf("") }
+        val context = LocalContext.current
         OutlinedTextField(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
@@ -110,7 +116,11 @@ fun memoTextField(viewModel : ListViewModel){
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxHeight(),
-            onClick = {viewModel.addMemo(Memo(textState, false)) }
+            onClick = {
+                viewModel.addMemo(Memo(textState, false))
+                textState = ""
+                Toast.makeText(context,"메모를 추가했습니다",Toast.LENGTH_LONG)
+            }
         ) {
             Text(text = "Add")
         }
@@ -124,20 +134,23 @@ fun memoList(viewModel : ListViewModel){
     LazyColumn(){
         item{
             memoList.forEach{
-                listItem(it)
+                listItem(viewModel,it)
             }
         }
     }
 }
 
 @Composable()
-fun listItem(memo : Memo){
-    Card(modifier = Modifier
-        .padding(20.dp)
-        .fillMaxWidth(),
+fun listItem(viewModel : ListViewModel,memo : Memo){
+    var dialogState by remember{mutableStateOf(false)}
+    Card(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()
+            .clickable(onClick = {dialogState = true}),
         elevation = 10.dp,
-        shape = RoundedCornerShape(12.dp)
-        ) {
+        shape = RoundedCornerShape(12.dp),
+    ) {
         Row(Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
             ) {
@@ -148,7 +161,7 @@ fun listItem(memo : Memo){
                 Icon(painterResource(id = R.drawable.ic_unlock), contentDescription = "unlock")
             }
             Text(
-                text = memo.title,
+                text = if(memo.lock) stringResource(id = R.string.lock_text) else memo.title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 10.dp)
@@ -156,7 +169,69 @@ fun listItem(memo : Memo){
 
         }
     }
+    if(dialogState) memoDialog({dialogState= false},viewModel,memo)
+}
 
+@Composable()
+fun memoDialog(onDismissDialog : () -> Unit,
+               viewModel: ListViewModel,
+               memo : Memo){
+    Dialog(onDismissRequest = onDismissDialog) {
+        Surface(modifier = Modifier.width(200.dp)
+            .wrapContentHeight(),
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White
+            ) {
+            memoDialogContent(viewModel,memo = memo)
+        }
+    }
+}
+
+@Composable()
+fun memoDialogContent(viewModel : ListViewModel,memo : Memo){
+    Column(Modifier.padding(12.dp)){
+        var textState by remember{mutableStateOf(memo.title)}
+        var lockState by remember{mutableStateOf(memo.lock)}
+        var passwordState by remember{mutableStateOf("")}
+        OutlinedTextField(modifier = Modifier
+            .padding(horizontal = 10.dp),
+            singleLine = true,
+            value = textState,
+            onValueChange = { textState = it },
+            label = { Text("현재 메모") })
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(12.dp))
+        Row() {
+            Checkbox(checked = lockState, onCheckedChange = { lockState = it })
+            Text(text ="Lock")
+        }
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(12.dp))
+        OutlinedTextField(
+            modifier = Modifier
+                .padding(horizontal = 10.dp),
+            singleLine = true,
+            value = passwordState,
+            onValueChange = { passwordState= it },
+            label = { Text("Password") },
+            placeholder = { Text("Password") }
+        )
+        OutlinedButton(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+            onClick = {
+                memo.title = textState
+                memo.lock = lockState
+                viewModel.modifyMemo(memo)
+            }
+        ) {
+            Text(text = "Modify")
+        }
+
+    }
 }
 
 

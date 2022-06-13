@@ -9,10 +9,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class MemoRepository(private val local : MemoLocalDataSource) : MemoDataSource {
-    override suspend fun loadMemoList() = local.loadMemoList().flowOn(Dispatchers.IO).conflate()
+    override suspend fun loadMemoList() = local.loadMemoList()
+        .flowOn(Dispatchers.IO)
+        .conflate()
 
     override suspend fun addMemo(memo: Memo) {
         local.addMemo(memo)
+    }
+
+    override suspend fun modifyMemo(memo: Memo) {
+        local.modifyMemo(memo)
     }
 
 }

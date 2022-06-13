@@ -9,4 +9,5 @@ class MemoLocalDataSource(private val memoDao : MemoDao) {
 
     suspend fun addMemo(memo: Memo) = memoDao.insertMemo(memo)
 
+    suspend fun modifyMemo(memo : Memo) = memoDao.modifyMemo(memo)
 }

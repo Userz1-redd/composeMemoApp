@@ -8,4 +8,6 @@ interface MemoDataSource {
     suspend fun loadMemoList() : Flow<List<Memo>>
 
     suspend fun addMemo(memo : Memo)
+
+    suspend fun modifyMemo(memo : Memo)
 }

@@ -169,7 +169,7 @@ fun listItem(viewModel : ListViewModel,memo : Memo){
 
         }
     }
-    if(dialogState) memoDialog({dialogState= false},viewModel,memo)
+    if(dialogState) memoDialog({dialogState= !dialogState},viewModel,memo)
 }
 
 @Composable()
@@ -182,13 +182,13 @@ fun memoDialog(onDismissDialog : () -> Unit,
             shape = RoundedCornerShape(12.dp),
             color = Color.White
             ) {
-            memoDialogContent(viewModel,memo = memo)
+            memoDialogContent(onDismissDialog,viewModel,memo = memo)
         }
     }
 }
 
 @Composable()
-fun memoDialogContent(viewModel : ListViewModel,memo : Memo){
+fun memoDialogContent(onDismissDialog: () -> Unit,viewModel : ListViewModel,memo : Memo){
     Column(Modifier.padding(12.dp)){
         var textState by remember{mutableStateOf(memo.title)}
         var lockState by remember{mutableStateOf(memo.lock)}
@@ -226,6 +226,7 @@ fun memoDialogContent(viewModel : ListViewModel,memo : Memo){
                 memo.title = textState
                 memo.lock = lockState
                 viewModel.modifyMemo(memo)
+                onDismissDialog
             }
         ) {
             Text(text = "Modify")

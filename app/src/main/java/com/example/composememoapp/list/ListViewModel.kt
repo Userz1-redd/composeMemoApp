@@ -15,9 +15,18 @@ class ListViewModel(private val repository : MemoRepository) : ViewModel() {
     var memoItems: StateFlow<List<Memo>> = _memoItems
     init{
         viewModelScope.launch(Dispatchers.IO) {
-            repository.loadMemoList().distinctUntilChanged()
-                .collect{ list ->
-                    _memoItems.value = list
+            repository
+                .loadMemoList()
+                .flowOn(Dispatchers.IO)
+                .distinctUntilChanged()
+                .conflate()
+                .stateIn(
+                    initialValue = listOf(),
+                    started =  SharingStarted.WhileSubscribed(5000),
+                    scope = viewModelScope
+                )
+                .collect{
+                    list -> _memoItems.value = list
                 }
         }
     }

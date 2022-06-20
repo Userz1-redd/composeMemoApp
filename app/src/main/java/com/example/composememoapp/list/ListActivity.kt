@@ -1,6 +1,5 @@
 package com.example.composememoapp.list
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity

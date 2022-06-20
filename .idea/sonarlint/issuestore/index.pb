@@ -10,7 +10,3 @@ n
 >app/src/main/java/com/example/composememoapp/ui/theme/Color.kt,e\2\e2df93c59c68edad43ac42eeb4877f25fbd22838
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-~
-Napp/src/main/java/com/example/composememoapp/data/source/local/MemoDatabase.kt,8\5\85e413c7841c7e0fc44999fc9832c90841ba9ac7

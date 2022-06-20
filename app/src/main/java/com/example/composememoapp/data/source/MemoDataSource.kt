@@ -1,13 +1,15 @@
 package com.example.composememoapp.data.source
 
 import com.example.composememoapp.data.Memo
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 import kotlinx.coroutines.flow.Flow
 
 interface MemoDataSource {
 
-    suspend fun loadMemoList() : Flow<List<Memo>>
+    fun loadMemoList() : Flowable<List<Memo>>
 
-    suspend fun addMemo(memo : Memo)
+    fun addMemo(memo : Memo) : Completable
 
-    suspend fun modifyMemo(memo : Memo)
+    fun modifyMemo(memo : Memo) : Completable
 }

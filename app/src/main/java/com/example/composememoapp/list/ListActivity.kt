@@ -129,7 +129,7 @@ fun memoTextField(viewModel : ListViewModel){
 
 @Composable
 fun memoList(viewModel : ListViewModel){
-    val memoList : List<Memo> by viewModel.memoItems.collectAsState(listOf())
+    val memoList : List<Memo> by viewModel.memoItems.observeAsState(listOf())
     LazyColumn(){
         item{
             memoList.forEach{

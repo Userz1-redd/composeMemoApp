@@ -22,8 +22,8 @@ class ListViewModel(private val repository : MemoRepository) : ViewModel() {
     val compositeDisposable = CompositeDisposable()
     init{
         repository.loadMemoList()
-            .observeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .distinctUntilChanged()
             .subscribe({
                 _memoItems.postValue(it)
@@ -35,14 +35,16 @@ class ListViewModel(private val repository : MemoRepository) : ViewModel() {
     fun addMemo(memo : Memo){
         Log.d("TAG","Add Memo ${memo}")
         repository.addMemo(memo)
-            .observeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
     }
 
     fun modifyMemo(memo : Memo){
         repository.modifyMemo(memo)
-            .observeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
     }
 
     override fun onCleared(){

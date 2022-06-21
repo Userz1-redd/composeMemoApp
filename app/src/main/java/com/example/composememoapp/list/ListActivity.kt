@@ -94,6 +94,7 @@ fun titleField(){
     }
 }
 
+
 @Composable
 fun memoTextField(viewModel : ListViewModel){
     Row(modifier = Modifier
